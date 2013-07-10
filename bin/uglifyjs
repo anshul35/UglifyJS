@@ -35,15 +35,22 @@ var options = {
         inline_script: false
     },
     make: false,
-    output: true            // stdout
+    output: true,            // stdout\
+    regex_mangle: false,
+    regex_value:undefined
 };
 
 var args = jsp.slice(process.argv, 2);
 var filename;
-
 out: while (args.length > 0) {
     var v = args.shift();
     switch (v) {
+      case "-rm":
+      case "--regex_mangle":
+        options.regex_mangle = true;  
+        v = args.shift();
+        options.regex_value = v;
+        break;
       case "-b":
       case "--beautify":
         options.codegen_options.beautify = true;
@@ -292,6 +299,8 @@ function squeeze_it(code) {
         }
         ast = time_it("mangle", function(){
             return pro.ast_mangle(ast, {
+                regex_value  : options.regex_value,
+                regex_mangle : options.regex_mangle,
                 mangle       : options.mangle,
                 toplevel     : options.mangle_toplevel,
                 defines      : options.defines,
